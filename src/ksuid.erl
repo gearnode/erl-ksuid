@@ -14,7 +14,7 @@
 
 -module(ksuid).
 
--export([generate/0, generate_string/0, format/1, parse/1,
+-export([generate/0, generate_string/0, system_time/1, format/1, parse/1,
          random_data/0, current_timestamp/0,
          system_time_to_timestamp/1, timestamp_to_system_time/1]).
 
@@ -33,6 +33,10 @@ generate() ->
 -spec generate_string() -> ksuid_string().
 generate_string() ->
   format(generate()).
+
+-spec system_time(ksuid()) -> integer().
+system_time(<<Id:32, _/binary>>) ->
+  timestamp_to_system_time(Id).
 
 -spec format(ksuid()) -> ksuid_string().
 format(<<Id:160>>) ->
