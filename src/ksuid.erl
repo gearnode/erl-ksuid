@@ -14,7 +14,7 @@
 
 -module(ksuid).
 
--export([generate/0,
+-export([generate/0, generate_string/0, format/1, parse/1,
          random_data/0, current_timestamp/0,
          system_time_to_timestamp/1, timestamp_to_system_time/1]).
 
@@ -29,6 +29,23 @@ generate() ->
   Timestamp = current_timestamp(),
   RandomData = random_data(),
   <<Timestamp:32, RandomData/binary>>.
+
+-spec generate_string() -> ksuid_string().
+generate_string() ->
+  format(generate()).
+
+-spec format(ksuid()) -> ksuid_string().
+format(<<Id:160>>) ->
+  ksuid_base62:encode(Id).
+
+-spec parse(binary()) -> {ok, ksuid()} | {error, term()}.
+parse(Data) ->
+  case ksuid_base62:decode(Data) of
+    {ok, N} ->
+      {ok, <<N:160>>};
+    {error, Reason} ->
+      {error, Reason}
+  end.
 
 -spec current_timestamp() -> ksuid_timestamp().
 current_timestamp() ->
