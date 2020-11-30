@@ -43,13 +43,15 @@ format(<<Id:160>>) ->
   ksuid_base62:encode(Id).
 
 -spec parse(binary()) -> {ok, ksuid()} | {error, term()}.
-parse(Data) ->
+parse(Data) when byte_size(Data) =:= 27 ->
   case ksuid_base62:decode(Data) of
     {ok, N} ->
       {ok, <<N:160>>};
     {error, Reason} ->
       {error, Reason}
-  end.
+  end;
+parse(_Data) ->
+  {error, invalid_format}.
 
 -spec current_timestamp() -> ksuid_timestamp().
 current_timestamp() ->

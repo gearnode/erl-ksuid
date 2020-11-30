@@ -16,6 +16,17 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+parse_test_() ->
+  [?_assertEqual({ok, <<12,82,194,192,81,235,30,45,167,101,
+                        37,49,142,237,93,150,108,158,91,122>>},
+                 ksuid:parse(<<"1l12i5euax5i7oGDn5DFULPYdCM">>)),
+   ?_assertEqual({error, invalid_format},
+                 ksuid:parse(<<"">>)),
+   ?_assertEqual({error, invalid_format},
+                 ksuid:parse(<<"1l12i5euax5i7oGDn5DFULPYdCM2">>)),
+   ?_assertEqual({error, {invalid_character, $=}},
+                 ksuid:parse(<<"1l12i5euax5i7oGDn5DFULPYdC=">>))].
+
 generate_test_() ->
   Ids = [ksuid:generate() || _ <- lists:seq(1, 100)],
   [?_assertEqual(20, byte_size(Id)) || Id <- Ids].
