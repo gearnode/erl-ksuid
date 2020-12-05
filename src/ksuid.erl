@@ -36,8 +36,13 @@ generate_binary() ->
   <<Timestamp:32, RandomData/binary>>.
 
 -spec is_valid(ksuid()) -> boolean().
-is_valid(<<_:216>>) ->
-  true;
+is_valid(Id) when is_binary(Id) ->
+  case re:run(Id, "^[0-9A-Za-z]{27}$") of
+    {match, _} ->
+      true;
+    nomatch ->
+      false
+  end;
 is_valid(_) ->
   false.
 
