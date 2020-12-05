@@ -14,35 +14,55 @@
 
 -module(ksuid).
 
--export([generate/0, generate_string/0, system_time/1, format/1, parse/1,
+-export([generate/0, generate_binary/0,
+         is_valid/1, is_valid_binary/1, system_time/1, format/1, parse/1,
          random_data/0, current_timestamp/0,
          system_time_to_timestamp/1, timestamp_to_system_time/1]).
 
--export_type([ksuid/0, ksuid_string/0]).
+-export_type([ksuid/0, ksuid_binary/0]).
 
--type ksuid() :: <<_:160>>.
--type ksuid_string() :: <<_:216>>.
+-type ksuid() :: <<_:216>>.
+-type ksuid_binary() :: <<_:160>>.
 -type ksuid_timestamp() :: 0..4_294_967_295.
 
 -spec generate() -> ksuid().
 generate() ->
+  format(generate_binary()).
+
+-spec generate_binary() -> ksuid_binary().
+generate_binary() ->
   Timestamp = current_timestamp(),
   RandomData = random_data(),
   <<Timestamp:32, RandomData/binary>>.
 
--spec generate_string() -> ksuid_string().
-generate_string() ->
-  format(generate()).
+-spec is_valid(ksuid()) -> boolean().
+is_valid(<<_:216>>) ->
+  true;
+is_valid(_) ->
+  false.
 
--spec system_time(ksuid()) -> integer().
+-spec is_valid_binary(ksuid_binary()) -> boolean().
+is_valid_binary(<<_:160>>) ->
+  true;
+is_valid_binary(_) ->
+  false.
+
+-spec system_time(ksuid() | ksuid_binary()) -> integer().
+system_time(Id) when byte_size(Id) == 27 ->
+  case parse(Id) of
+    {ok, Bin} ->
+      system_time(Bin);
+    {error, Reason} ->
+      error({invalid_ksuid, Reason})
+  end;
 system_time(<<Id:32, _/binary>>) ->
   timestamp_to_system_time(Id).
 
--spec format(ksuid()) -> ksuid_string().
+-spec format(ksuid_binary()) -> ksuid().
 format(<<Id:160>>) ->
   ksuid_base62:encode(Id).
 
--spec parse(binary()) -> {ok, ksuid()} | {error, term()}.
+-spec parse(binary()) -> {ok, ksuid_binary()} | {error, term()}.
 parse(Data) when byte_size(Data) =:= 27 ->
   case ksuid_base62:decode(Data) of
     {ok, N} ->

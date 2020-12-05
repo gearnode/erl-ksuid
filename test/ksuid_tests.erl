@@ -27,14 +27,18 @@ parse_test_() ->
    ?_assertEqual({error, {invalid_character, $=}},
                  ksuid:parse(<<"1l12i5euax5i7oGDn5DFULPYdC=">>))].
 
-generate_test_() ->
+is_valid_test_() ->
   Ids = [ksuid:generate() || _ <- lists:seq(1, 100)],
-  [?_assertEqual(20, byte_size(Id)) || Id <- Ids].
+  [?_assert(ksuid:is_valid(Id)) || Id <- Ids].
+
+is_valid_binary_test_() ->
+  Ids = [ksuid:generate_binary() || _ <- lists:seq(1, 100)],
+  [?_assert(ksuid:is_valid_binary(Id)) || Id <- Ids].
 
 format_test_() ->
-  Ids = [ksuid:generate() || _ <- lists:seq(1, 100)],
+  Ids = [ksuid:generate_binary() || _ <- lists:seq(1, 100)],
   [?_assertEqual(27, byte_size(ksuid:format(Id))) || Id <- Ids].
 
 format_parse_test_() ->
-  Ids = [ksuid:generate() || _ <- lists:seq(1, 100)],
+  Ids = [ksuid:generate_binary() || _ <- lists:seq(1, 100)],
   [?_assertEqual({ok, Id}, ksuid:parse(ksuid:format(Id))) || Id <- Ids].
