@@ -1,6 +1,9 @@
 % erl-ksuid changelog
 
 # Next Version
+## Bugs
+- Add missing dependency on `crypto`.
+
 # 1.1.1
 ## Bugs
 - Validate the string content in `ksuid:is_valid/1`.
