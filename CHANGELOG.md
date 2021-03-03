@@ -1,6 +1,8 @@
 % erl-ksuid changelog
 
 # Next Version
+
+# 1.1.2
 ## Bugs
 - Add missing dependency on `crypto`.
 
