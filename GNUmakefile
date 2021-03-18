@@ -2,17 +2,17 @@
 all: dialyzer test
 
 dialyzer:
-	rebar3 dialyzer
+	QUIET=1 rebar3 dialyzer
 
 build:
-	rebar3 compile
+	QUIET=1 rebar3 compile
 
 test:
-	rebar3 eunit
+	QUIET=1 rebar3 eunit
 
 cover:
-	rebar3 eunit --cover
-	rebar3 cover
+	QUIET=1 rebar3 eunit --cover
+	QUIET=1 rebar3 cover
 
 clean:
 	$(RM) -r _build
